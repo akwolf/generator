@@ -28,19 +28,19 @@
   <groupId>org.mybatis.generator</groupId>
   <artifactId>mybatis-generator</artifactId>
   <name>MyBatis Generator</name>
-  <version>1.3.7-SNAPSHOT</version>
+  <version>1.3.8-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2006</inceptionYear>
 
   <description>Parent POM for MyBatis Generator</description>
 
-  <scm>
+<!--  <scm>
     <url>https://github.com/mybatis/generator</url>
     <connection>scm:git:ssh://github.com/mybatis/generator.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/mybatis/generator.git</developerConnection>
     <tag>HEAD</tag>
-  </scm>
+  </scm>-->
   <issueManagement>
     <system>GitHub Issue Management</system>
     <url>https://github.com/mybatis/generator/issues</url>
@@ -118,16 +118,16 @@
           <argLine>${jacoco.agent.arg} -Xmx1024m -XX:MaxPermSize=256m</argLine>
         </configuration>
       </plugin>
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
-          <!-- turn off be default, we'll turn it back on in the core project -->
+          &lt;!&ndash; turn off be default, we'll turn it back on in the core project &ndash;&gt;
           <skip>true</skip>
         </configuration>
-      </plugin>
+      </plugin>-->
       <!-- need to allow snapshots so the maven plugin can be tested -->
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
@@ -158,10 +158,10 @@
             </tag>
           </tags>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
 
-    <resources>
+    <!--<resources>
       <resource>
         <directory>${project.basedir}/src/main/resources</directory>
       </resource>
@@ -173,10 +173,10 @@
           <include>NOTICE</include>
         </includes>
       </resource>
-    </resources>
+    </resources>-->
   </build>
 
-  <reporting>
+  <!--<reporting>
     <plugins>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -216,7 +216,7 @@
         </configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting>-->
 
   <dependencyManagement>
     <dependencies>
@@ -317,12 +317,12 @@
 
   <modules>
     <module>mybatis-generator-core</module>
-    <module>mybatis-generator-systests-domtests</module>
+    <!--<module>mybatis-generator-systests-domtests</module>-->
     <module>mybatis-generator-maven-plugin</module>
-    <module>mybatis-generator-systests-common</module>
+    <!--<module>mybatis-generator-systests-common</module>
     <module>mybatis-generator-systests-mybatis3</module>
     <module>mybatis-generator-systests-mybatis3-java8</module>
-    <module>mybatis-generator-systests-ibatis2-java5</module>
+    <module>mybatis-generator-systests-ibatis2-java5</module>-->
   </modules>
 
   <profiles>
@@ -407,9 +407,9 @@
       <activation>
         <jdk>1.8</jdk>
       </activation>
-      <modules>
+      <!--<modules>
         <module>mybatis-generator-systests-ibatis2-java2</module>
-      </modules>
+      </modules>-->
     </profile>
     <profile>
       <id>jdk9</id>
@@ -427,13 +427,13 @@
         <pluginManagement>
           <plugins>
             <!-- Exposes a bug due to java 4 module being skipped so skip run -->
-            <plugin>
+            <!--<plugin>
               <groupId>com.mycila</groupId>
               <artifactId>license-maven-plugin</artifactId>
               <configuration>
                 <skip>true</skip>
               </configuration>
-            </plugin>
+            </plugin>-->
           </plugins>
         </pluginManagement>
       </build>
@@ -478,5 +478,18 @@
       </build>
     </profile>
   </profiles>
-
+  <distributionManagement>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>nexus distribution snapshot repository</name>
+      <!--<url>http://120.79.227.65:8081/nexus/content/repositories/snapshots/</url>-->
+      <url>http://192.168.0.91:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>nexus-releases</id>
+      <name>nexus releases snapshot repository</name>
+      <!--<url>http://120.79.227.65:8081/nexus/content/repositories/releases/</url>-->
+      <url>http://192.168.0.91:8081/repository/maven-releases/</url>
+    </repository>
+  </distributionManagement>
 </project>

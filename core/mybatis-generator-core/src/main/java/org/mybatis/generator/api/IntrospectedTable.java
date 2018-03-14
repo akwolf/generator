@@ -94,7 +94,9 @@ public abstract class IntrospectedTable {
         ATTR_BASE_COLUMN_LIST_ID,
         ATTR_BLOB_COLUMN_LIST_ID,
         ATTR_MYBATIS3_UPDATE_BY_EXAMPLE_WHERE_CLAUSE_ID,
-        ATTR_MYBATIS3_SQL_PROVIDER_TYPE
+        ATTR_MYBATIS3_SQL_PROVIDER_TYPE,
+        ATTR_SELECT_BY_CDT_STATEMENT_ID,
+        ATTR_SELECT_COUNT_BY_CDT_STATEMENT_ID
     }
 
     protected TableConfiguration tableConfiguration;
@@ -431,6 +433,8 @@ public abstract class IntrospectedTable {
                 .get(InternalAttribute.ATTR_DAO_INTERFACE_TYPE);
     }
 
+
+
     public boolean hasAnyColumns() {
         return primaryKeyColumns.size() > 0 || baseColumns.size() > 0
                 || blobColumns.size() > 0;
@@ -548,6 +552,8 @@ public abstract class IntrospectedTable {
         setBaseColumnListId("Base_Column_List"); //$NON-NLS-1$
         setBlobColumnListId("Blob_Column_List"); //$NON-NLS-1$
         setMyBatis3UpdateByExampleWhereClauseId("Update_By_Example_Where_Clause"); //$NON-NLS-1$
+        setSelectByCdtStatementId("selectListByWhere");
+        setSelectCountByCdtStatementId("selectCountByWhere");
     }
 
     public void setBlobColumnListId(String s) {
@@ -659,6 +665,14 @@ public abstract class IntrospectedTable {
         internalAttributes.put(
                 InternalAttribute.ATTR_COUNT_BY_EXAMPLE_STATEMENT_ID, s);
     }
+    public void setSelectByCdtStatementId(String s) {
+        internalAttributes.put(InternalAttribute.ATTR_SELECT_BY_CDT_STATEMENT_ID,s);
+    }
+
+    public void setSelectCountByCdtStatementId(String s) {
+        internalAttributes.put(InternalAttribute.ATTR_SELECT_COUNT_BY_CDT_STATEMENT_ID,s);
+    }
+
 
     public String getBlobColumnListId() {
         return internalAttributes
@@ -763,6 +777,15 @@ public abstract class IntrospectedTable {
     public String getCountByExampleStatementId() {
         return internalAttributes
                 .get(InternalAttribute.ATTR_COUNT_BY_EXAMPLE_STATEMENT_ID);
+    }
+    public String getSelectByCdtStatementId() {
+        return internalAttributes
+                .get(InternalAttribute.ATTR_SELECT_BY_CDT_STATEMENT_ID);
+    }
+
+    public String getSelectCountByCdtStatementId() {
+        return internalAttributes
+                .get(InternalAttribute.ATTR_SELECT_COUNT_BY_CDT_STATEMENT_ID);
     }
 
     protected String calculateJavaClientImplementationPackage() {
