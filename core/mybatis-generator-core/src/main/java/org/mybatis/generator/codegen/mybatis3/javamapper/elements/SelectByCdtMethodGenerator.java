@@ -34,19 +34,21 @@ public class SelectByCdtMethodGenerator extends AbstractJavaMapperMethodGenerato
         Method method = new Method();
         method.setVisibility(JavaVisibility.PUBLIC);
 
-        FullyQualifiedJavaType parameterType = introspectedTable.getRules().calculateAllFieldsClass();
+        FullyQualifiedJavaType entityType = introspectedTable.getRules().calculateAllFieldsClass();
+//        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
         FullyQualifiedJavaType returnType = FullyQualifiedJavaType.getNewListInstance();
-        returnType.addTypeArgument(parameterType);
-        method.setReturnType(FullyQualifiedJavaType.getNewListInstance());
+
+
+        FullyQualifiedJavaType shortNameReturnType = new FullyQualifiedJavaType(returnType.getShortName());
+
+        shortNameReturnType.addTypeArgument(entityType);
+        method.setReturnType(shortNameReturnType);
         importedTypes.add(returnType);
-        importedTypes.add(parameterType);
-//        importedTypes.add(FullyQualifiedJavaType.getPageBoundsType());
-//        importedTypes.add(FullyQualifiedJavaType.getDataSourceType());
+        importedTypes.add(entityType);
 
         method.setName(introspectedTable.getSelectByCdtStatementId());
 
-        method.addParameter(new Parameter(parameterType, "record")); //$NON-NLS-1$
-//        method.addParameter(new Parameter(FullyQualifiedJavaType.getPageBoundsType(), "pageBounds"));
+        method.addParameter(new Parameter(entityType, "record")); //$NON-NLS-1$
         addMapperAnnotations(interfaze, method);
 
         context.getCommentGenerator().addGeneralMethodComment(method, introspectedTable);

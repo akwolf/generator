@@ -52,7 +52,8 @@ public class DubboServicePlugin extends PluginAdapter {
 
         String targetPackage = getProperties().getProperty(TARGET_PACKAGE);
         String targetProject = getProperties().getProperty(TARGET_PROJECT);
-        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
+//        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
+        FullyQualifiedJavaType entityType = introspectedTable.getRules().calculateAllFieldsClass();
         String domainObjectName = introspectedTable.getFullyQualifiedTable().getDomainObjectName();
         // 生成 Service 名称
         String service = targetPackage + "." + domainObjectName + "Service";
@@ -64,7 +65,7 @@ public class DubboServicePlugin extends PluginAdapter {
         if (methods != null && methods.size() > 0) {
             for (Method m : methods) {
                 Method method = new Method(m);
-                method.setReturnType(wrapFullyQualifiedJavaType(method, domainObjectName));
+                method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
                 interfaze.addMethod(method);
             }
         }
@@ -88,7 +89,9 @@ public class DubboServicePlugin extends PluginAdapter {
 
         String mapperPackage = introspectedTable.getContext().getJavaClientGeneratorConfiguration().getTargetPackage();
 
-        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
+//        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
+        FullyQualifiedJavaType entityType = introspectedTable.getRules().calculateAllFieldsClass();
+
         String domainObjectName = introspectedTable.getFullyQualifiedTable().getDomainObjectName();
         // 生成 Service 名称
         String service = targetPackage + "." + domainObjectName + "Service";
@@ -110,7 +113,7 @@ public class DubboServicePlugin extends PluginAdapter {
         if (methods != null && methods.size() > 0) {
             for (Method m : methods) {
                 Method method = new Method(m);
-                method.setReturnType(wrapFullyQualifiedJavaType(method, domainObjectName));
+                method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
                 StringBuffer buffer = new StringBuffer();
                 buffer.append("return DataStore.of(").append(firstLetterLowerCase(mapperName)).append(".").append(method.getName());
                 buffer.append("(");
