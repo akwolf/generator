@@ -42,7 +42,7 @@ public class DubboServicePlugin extends PluginAdapter {
     }
 
     /**
-     * 生成Service
+     * 生成Service接口
      *
      * @param introspectedTable
      * @param methods
@@ -65,7 +65,14 @@ public class DubboServicePlugin extends PluginAdapter {
         if (methods != null && methods.size() > 0) {
             for (Method m : methods) {
                 Method method = new Method(m);
+                String originalReturnType = m.getReturnType().getShortNameWithoutTypeArguments();
                 method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
+                if ("List".equalsIgnoreCase(originalReturnType)) {
+                    Method nonePageableMethod = new Method(method);
+                    method.addParameter(1, new Parameter(FullyQualifiedJavaType.getIntInstance(), "startIndex"));
+                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
+                    interfaze.addMethod(nonePageableMethod);
+                }
                 interfaze.addMethod(method);
             }
         }
@@ -89,7 +96,6 @@ public class DubboServicePlugin extends PluginAdapter {
 
         String mapperPackage = introspectedTable.getContext().getJavaClientGeneratorConfiguration().getTargetPackage();
 
-//        FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
         FullyQualifiedJavaType entityType = introspectedTable.getRules().calculateAllFieldsClass();
 
         String domainObjectName = introspectedTable.getFullyQualifiedTable().getDomainObjectName();
@@ -112,12 +118,15 @@ public class DubboServicePlugin extends PluginAdapter {
 
         if (methods != null && methods.size() > 0) {
             for (Method m : methods) {
+                String originalReturnType = m.getReturnType().getShortNameWithoutTypeArguments();
                 Method method = new Method(m);
+
                 method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
                 StringBuffer buffer = new StringBuffer();
+
                 buffer.append("return DataStore.of(").append(firstLetterLowerCase(mapperName)).append(".").append(method.getName());
                 buffer.append("(");
-                List<Parameter> parameters = method.getParameters();
+                List<Parameter> parameters = m.getParameters();
                 if (parameters != null && parameters.size() > 0) {
                     for (Parameter parameter : parameters) {
                         String parameterName = parameter.getName();
@@ -127,8 +136,24 @@ public class DubboServicePlugin extends PluginAdapter {
                     }
                 }
                 buffer.append("))").append(";");
+                // 生成分页
+
+                if ("List".equalsIgnoreCase(originalReturnType)) {
+                    Method nonePageableMethod = new Method(method);
+                    StringBuffer nonePageableMethodBody = new StringBuffer(buffer.toString());
+                    nonePageableMethod.addBodyLine(nonePageableMethodBody.toString());
+                    clazz.addMethod(nonePageableMethod);
+
+                    method.addParameter(1, new Parameter(FullyQualifiedJavaType.getIntInstance(), "startIndex"));
+                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
+                    clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.PageHelper"));
+//                    String pageableLine = "PageHelper.startPage(startIndex,pageSize);";
+                    buffer.insert(0, "PageHelper.startPage(startIndex,pageSize);");
+                }
+
                 method.addBodyLine(buffer.toString());
                 clazz.addMethod(method);
+
             }
         }
 
