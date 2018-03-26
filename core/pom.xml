@@ -480,16 +480,14 @@
   </profiles>
   <distributionManagement>
     <snapshotRepository>
-      <id>nexus-snapshots</id>
+      <id>yb-snapshots</id>
       <name>nexus distribution snapshot repository</name>
-      <!--<url>http://120.79.227.65:8081/nexus/content/repositories/snapshots/</url>-->
-      <url>http://192.168.0.91:8081/repository/maven-snapshots/</url>
+      <url>http://120.79.227.65:8081/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>nexus-releases</id>
+      <id>yb-releases</id>
       <name>nexus releases snapshot repository</name>
-      <!--<url>http://120.79.227.65:8081/nexus/content/repositories/releases/</url>-->
-      <url>http://192.168.0.91:8081/repository/maven-releases/</url>
+      <url>http://120.79.227.65:8081/nexus/content/repositories/releases/</url>
     </repository>
   </distributionManagement>
 </project>
