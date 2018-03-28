@@ -105,8 +105,8 @@ public class DubboServicePlugin extends PluginAdapter {
 
         TopLevelClass clazz = new TopLevelClass(new FullyQualifiedJavaType(serviceImpl));
 
-        clazz.addAnnotation("@Service(interfaceClass=" + (domainObjectName + "Service") + ".class)");
-        clazz.addAnnotation("@Component");
+        clazz.addAnnotation("@Service");
+//        clazz.addAnnotation("@Component");
         clazz.setVisibility(JavaVisibility.PUBLIC);
         clazz.addSuperInterface(new FullyQualifiedJavaType(service));
 
@@ -160,7 +160,7 @@ public class DubboServicePlugin extends PluginAdapter {
         clazz.addField(field);
         clazz.addImportedType(entityType);
         clazz.addImportedType(service);
-        clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.stereotype.Component"));
+//        clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.stereotype.Component"));
         clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.beans.factory.annotation.Autowired"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.alibaba.dubbo.config.annotation.Service"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.DataStore"));
