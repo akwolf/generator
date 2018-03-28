@@ -69,8 +69,8 @@ public class DubboServicePlugin extends PluginAdapter {
                 method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
                 if ("List".equalsIgnoreCase(originalReturnType)) {
                     Method nonePageableMethod = new Method(method);
-                    method.addParameter(1, new Parameter(FullyQualifiedJavaType.getIntInstance(), "startIndex"));
-                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
+                    method.addParameter(1, new Parameter(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"), "pageBounds"));
+//                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
                     interfaze.addMethod(nonePageableMethod);
                 }
                 interfaze.addMethod(method);
@@ -79,6 +79,7 @@ public class DubboServicePlugin extends PluginAdapter {
         // import
         interfaze.addImportedType(entityType);
         interfaze.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.DataStore"));
+        interfaze.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"));
         return new GeneratedJavaFile(interfaze, targetProject, new DefaultJavaFormatter());
     }
 
@@ -144,11 +145,11 @@ public class DubboServicePlugin extends PluginAdapter {
                     nonePageableMethod.addBodyLine(nonePageableMethodBody.toString());
                     clazz.addMethod(nonePageableMethod);
 
-                    method.addParameter(1, new Parameter(FullyQualifiedJavaType.getIntInstance(), "startIndex"));
-                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
+                    method.addParameter(1, new Parameter(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"), "pageBounds"));
+//                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
                     clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.PageHelper"));
-//                    String pageableLine = "PageHelper.startPage(startIndex,pageSize);";
-                    buffer.insert(0, "PageHelper.startPage(startIndex,pageSize);");
+                    buffer.insert(0, "if(pageBounds != null){if(pageBounds.getOrderBy()!=null&&!pageBounds.getOrderBy().equalsIgnoreCase(\"\")){PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize(),pageBounds.getOrderBy());}else{PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize());}}");
+//                    buffer.insert(0, "PageHelper.startPage(startIndex,pageSize);");
                 }
 
                 method.addBodyLine(buffer.toString());
@@ -164,6 +165,7 @@ public class DubboServicePlugin extends PluginAdapter {
         clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.beans.factory.annotation.Autowired"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.alibaba.dubbo.config.annotation.Service"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.DataStore"));
+        clazz.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"));
         clazz.addImportedType(new FullyQualifiedJavaType(mapperPackage + "." + mapperName));
         return new GeneratedJavaFile(clazz, targetImplProject, new DefaultJavaFormatter());
     }
