@@ -148,8 +148,15 @@ public class DubboServicePlugin extends PluginAdapter {
                     method.addParameter(1, new Parameter(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"), "pageBounds"));
 //                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
                     clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.PageHelper"));
-                    buffer.insert(0, "if(pageBounds != null){if(pageBounds.getOrderBy()!=null&&!pageBounds.getOrderBy().equalsIgnoreCase(\"\")){PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize(),pageBounds.getOrderBy());}else{PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize());}}");
-//                    buffer.insert(0, "PageHelper.startPage(startIndex,pageSize);");
+//                    buffer.insert(0, "if(pageBounds != null){if(pageBounds.getOrderBy()!=null&&!pageBounds.getOrderBy().equalsIgnoreCase(\"\")){PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize(),pageBounds.getOrderBy());}else{PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize());}}");
+                    buffer.insert(0, "if (pageBounds != null) {\n" +
+                            "            if (pageBounds.getOrderBy() != null && !pageBounds.getOrderBy().equalsIgnoreCase(\"\")) {\n" +
+                            "                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize(), pageBounds.getOrderBy());\n" +
+                            "            } else {\n" +
+                            "                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize());\n" +
+                            "            }\n" +
+                            "        }\n" +
+                            "        ");
                 }
 
                 method.addBodyLine(buffer.toString());
