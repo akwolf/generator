@@ -70,7 +70,6 @@ public class DubboServicePlugin extends PluginAdapter {
                 if ("List".equalsIgnoreCase(originalReturnType)) {
                     Method nonePageableMethod = new Method(method);
                     method.addParameter(1, new Parameter(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"), "pageBounds"));
-//                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
                     interfaze.addMethod(nonePageableMethod);
                 }
                 interfaze.addMethod(method);
@@ -107,7 +106,6 @@ public class DubboServicePlugin extends PluginAdapter {
         TopLevelClass clazz = new TopLevelClass(new FullyQualifiedJavaType(serviceImpl));
 
         clazz.addAnnotation("@Service");
-//        clazz.addAnnotation("@Component");
         clazz.setVisibility(JavaVisibility.PUBLIC);
         clazz.addSuperInterface(new FullyQualifiedJavaType(service));
 
@@ -125,58 +123,67 @@ public class DubboServicePlugin extends PluginAdapter {
                 method.setReturnType(wrapFullyQualifiedJavaType(method, entityType.getShortName()));
                 StringBuffer buffer = new StringBuffer();
 
-                buffer.append("return DataStore.of(").append(firstLetterLowerCase(mapperName)).append(".").append(method.getName());
-                buffer.append("(");
+                StringBuffer daoMethodBuffer = new StringBuffer();
+                daoMethodBuffer.append(firstLetterLowerCase(mapperName)).append(".").append(method.getName());
+                daoMethodBuffer.append("(");
                 List<Parameter> parameters = m.getParameters();
                 if (parameters != null && parameters.size() > 0) {
                     for (Parameter parameter : parameters) {
                         String parameterName = parameter.getName();
                         FullyQualifiedJavaType type = parameter.getType();
                         clazz.addImportedType(type);
-                        buffer.append(parameterName);
+                        daoMethodBuffer.append(parameterName);
                     }
                 }
-                buffer.append("))").append(";");
-                // 生成分页
+                daoMethodBuffer.append(")");
 
+
+                // 生成分页
                 if ("List".equalsIgnoreCase(originalReturnType)) {
+
+                    // 单参数列表查询方法
                     Method nonePageableMethod = new Method(method);
-                    StringBuffer nonePageableMethodBody = new StringBuffer(buffer.toString());
-                    nonePageableMethod.addBodyLine(nonePageableMethodBody.toString());
+                    nonePageableMethod.addBodyLine("return DataStore.of(" + daoMethodBuffer + ");");
                     clazz.addMethod(nonePageableMethod);
 
+                    // 带分页列表查询方法
                     method.addParameter(1, new Parameter(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"), "pageBounds"));
-//                    method.addParameter(2, new Parameter(FullyQualifiedJavaType.getIntInstance(), "pageSize"));
                     clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.PageHelper"));
-//                    buffer.insert(0, "if(pageBounds != null){if(pageBounds.getOrderBy()!=null&&!pageBounds.getOrderBy().equalsIgnoreCase(\"\")){PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize(),pageBounds.getOrderBy());}else{PageHelper.startPage(pageBounds.getStartIndex(),pageBounds.getPageSize());}}");
-                    buffer.insert(0, "if (pageBounds != null) {\n" +
-                            "            if (pageBounds.getOrderBy() != null && !pageBounds.getOrderBy().equalsIgnoreCase(\"\")) {\n" +
-                            "                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize(), pageBounds.getOrderBy());\n" +
-                            "            } else {\n" +
-                            "                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize());\n" +
-                            "            }\n" +
-                            "        }\n" +
-                            "        ");
+                    buffer.append("if (pageBounds != null) {\n")
+                            .append("            if (pageBounds.getOrderBy() != null && !pageBounds.getOrderBy().equalsIgnoreCase(\"\")) {\n")
+                            .append("                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize(), pageBounds.getOrderBy());\n")
+                            .append("            } else {\n")
+                            .append("                PageHelper.startPage(pageBounds.getStartIndex(), pageBounds.getPageSize());\n")
+                            .append("            }\n")
+                            .append("        }\n")
+                            .append("        Page<").append(entityType.getShortName()).append("> page = (Page<").append(entityType.getShortName()).append(">) ").append(daoMethodBuffer.toString()).append(";\n")
+                            .append("        return DataStore.of(page.getTotal(), page.getResult());");
+                } else {
+                    buffer.append("return DataStore.of(").append(daoMethodBuffer).append(");");
                 }
-
                 method.addBodyLine(buffer.toString());
                 clazz.addMethod(method);
-
             }
         }
-
         clazz.addField(field);
         clazz.addImportedType(entityType);
         clazz.addImportedType(service);
-//        clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.stereotype.Component"));
         clazz.addImportedType(new FullyQualifiedJavaType("org.springframework.beans.factory.annotation.Autowired"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.alibaba.dubbo.config.annotation.Service"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.DataStore"));
         clazz.addImportedType(new FullyQualifiedJavaType("com.yk.hornet.common.domain.PageBounds"));
+        clazz.addImportedType(new FullyQualifiedJavaType("com.github.pagehelper.Page"));
         clazz.addImportedType(new FullyQualifiedJavaType(mapperPackage + "." + mapperName));
         return new GeneratedJavaFile(clazz, targetImplProject, new DefaultJavaFormatter());
     }
 
+    /**
+     * 包装方法泛型返回参数
+     *
+     * @param method
+     * @param domainObjectName
+     * @return
+     */
     private FullyQualifiedJavaType wrapFullyQualifiedJavaType(Method method, String domainObjectName) {
         FullyQualifiedJavaType returnType = method.getReturnType();
         FullyQualifiedJavaType genericReturnType = null;
@@ -399,5 +406,15 @@ public class DubboServicePlugin extends PluginAdapter {
         return super.clientUpdateByPrimaryKeyWithoutBLOBsMethodGenerated(method, topLevelClass, introspectedTable);
     }
 
+    @Override
+    public boolean clientInsertSelectiveMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
+        list.add(method);
+        return super.clientInsertSelectiveMethodGenerated(method, interfaze, introspectedTable);
+    }
 
+    @Override
+    public boolean clientInsertSelectiveMethodGenerated(Method method, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        list.add(method);
+        return super.clientInsertSelectiveMethodGenerated(method, topLevelClass, introspectedTable);
+    }
 }

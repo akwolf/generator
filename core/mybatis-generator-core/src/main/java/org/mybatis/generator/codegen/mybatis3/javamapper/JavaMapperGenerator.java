@@ -82,7 +82,7 @@ public class JavaMapperGenerator extends AbstractJavaClientGenerator {
         addSelectByPrimaryKeyMethod(interfaze);
         // @Nothing-Add
         addSelectByCdtMethod(interfaze);
-        addSelectCountByCdtMethod(interfaze);
+//        addSelectCountByCdtMethod(interfaze);
         addUpdateByExampleSelectiveMethod(interfaze);
         addUpdateByExampleWithBLOBsMethod(interfaze);
         addUpdateByExampleWithoutBLOBsMethod(interfaze);
@@ -113,11 +113,11 @@ public class JavaMapperGenerator extends AbstractJavaClientGenerator {
         initializeAndExecuteGenerator(methodGenerator, interfaze);
     }
 
-    protected void addSelectCountByCdtMethod(Interface interfaze)
-    {
-        AbstractJavaMapperMethodGenerator methodGenerator = new SelectCountByCdtMethodGenerator(false);
-        initializeAndExecuteGenerator(methodGenerator, interfaze);
-    }
+//    protected void addSelectCountByCdtMethod(Interface interfaze)
+//    {
+//        AbstractJavaMapperMethodGenerator methodGenerator = new SelectCountByCdtMethodGenerator(false);
+//        initializeAndExecuteGenerator(methodGenerator, interfaze);
+//    }
     protected void addCountByExampleMethod(Interface interfaze) {
         if (introspectedTable.getRules().generateCountByExample()) {
             AbstractJavaMapperMethodGenerator methodGenerator = new CountByExampleMethodGenerator();

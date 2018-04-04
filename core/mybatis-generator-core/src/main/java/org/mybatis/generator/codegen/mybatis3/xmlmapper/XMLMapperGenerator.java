@@ -59,7 +59,7 @@ public class XMLMapperGenerator extends AbstractXmlGenerator {
         addDeleteByPrimaryKeyElement(answer);
         //@Nothing-add
         addSelectByCdtElement(answer);
-        addSelectCountByCdtElement(answer);
+//        addSelectCountByCdtElement(answer);
         addDeleteByExampleElement(answer);
         addInsertElement(answer);
         addInsertSelectiveElement(answer);
@@ -82,12 +82,12 @@ public class XMLMapperGenerator extends AbstractXmlGenerator {
         }
     }
 
-    protected void addSelectCountByCdtElement(XmlElement parentElement) {
-        if (introspectedTable.getRules().generateDeleteByPrimaryKey()) {
-            AbstractXmlElementGenerator elementGenerator = new SelectCountByCdtElementGenerator();
-            initializeAndExecuteGenerator(elementGenerator, parentElement);
-        }
-    }
+//    protected void addSelectCountByCdtElement(XmlElement parentElement) {
+//        if (introspectedTable.getRules().generateDeleteByPrimaryKey()) {
+//            AbstractXmlElementGenerator elementGenerator = new SelectCountByCdtElementGenerator();
+//            initializeAndExecuteGenerator(elementGenerator, parentElement);
+//        }
+//    }
 
     protected void addResultMapWithoutBLOBsElement(XmlElement parentElement) {
         if (introspectedTable.getRules().generateBaseResultMap()) {
